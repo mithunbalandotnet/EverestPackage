@@ -14,6 +14,6 @@ namespace Kiki.Courier.Domain
         public string CouponCode { get; set; }
         public int TotalCost { get; set; } = 0;
         public int Discount { get; set; } = 0;
-        public decimal EstimatedDeliveryTime { get; set; } = 0;
+        public double EstimatedDeliveryTime { get; set; } = 0;
     }
 }

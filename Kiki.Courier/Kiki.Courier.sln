@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kiki.Courier.DAL", "Kiki.Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kiki.Courier.Domain", "Kiki.Courier.Domain\Kiki.Courier.Domain.csproj", "{C2E80A72-F08C-4C13-BD21-CACEB210F06A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kiki.Courier.Test", "Kiki.Courier.Test\Kiki.Courier.Test.csproj", "{830993F2-4F3A-4A3F-8AC0-CB7E473FAA68}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +38,10 @@ Global
 		{C2E80A72-F08C-4C13-BD21-CACEB210F06A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2E80A72-F08C-4C13-BD21-CACEB210F06A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2E80A72-F08C-4C13-BD21-CACEB210F06A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{830993F2-4F3A-4A3F-8AC0-CB7E473FAA68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{830993F2-4F3A-4A3F-8AC0-CB7E473FAA68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{830993F2-4F3A-4A3F-8AC0-CB7E473FAA68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{830993F2-4F3A-4A3F-8AC0-CB7E473FAA68}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

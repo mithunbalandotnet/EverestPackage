@@ -52,7 +52,7 @@ namespace Kiki.Courier.ServiceLayer
             {
                 var vehicle = vehicles.First(v => v.Trips.Any(t => t.Packages.Contains(p)));
                 var trip = vehicle.Trips.First(t => t.Packages.Contains(p));
-                p.EstimatedDeliveryTime = trip.StartTime + (decimal)1.0000 * p.DistanceInKm / maxSpeed;
+                p.EstimatedDeliveryTime = Math.Round(trip.StartTime + 1.0000 * p.DistanceInKm / (maxSpeed * 1.0000), 2);
             });
         }
 
@@ -96,7 +96,7 @@ namespace Kiki.Courier.ServiceLayer
                         Trips = new List<Trip>() { new Trip {
                         Packages = journey.packages,
                         Distance = journey.packages.Select(p => p.DistanceInKm).Max(),
-                        StartTime = 0, EndTime = journey.packages.Select(p => p.DistanceInKm).Max() * (decimal)2.0000 / maxSpeed
+                        StartTime = 0, EndTime = journey.packages.Select(p => p.DistanceInKm).Max() * 2.0000 / (maxSpeed * 1.0000)
                     } }
                     };
                     vehicles.Add(vehicle);
@@ -110,7 +110,7 @@ namespace Kiki.Courier.ServiceLayer
                         Packages = journey.packages,
                         Distance = journey.packages.Select(p => p.DistanceInKm).Max(),
                         StartTime = lastTripEndTime,
-                        EndTime = lastTripEndTime + (journey.packages.Select(p => p.DistanceInKm).Max() * (decimal)2.0000 / maxSpeed)
+                        EndTime = lastTripEndTime + (journey.packages.Select(p => p.DistanceInKm).Max() * 2.0000 / (maxSpeed * 1.0000))
                     });
                     vehicles.Add(vehicle);
                 }
