@@ -1,0 +1,15 @@
+﻿using Kiki.Courier.Domain;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Kiki.Courier.DAL.Contract
+{
+    public interface ICouponDAL
+    {
+        Task<CouponCode> GetCouponCodeAsync(string code);
+        Task<IEnumerable<CouponCode>> GetAllCouponCodesAsync();
+    }
+}
