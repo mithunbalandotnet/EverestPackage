@@ -9,8 +9,8 @@ namespace Kiki.Courier.ServiceLayer.IContract
 {
     public interface IPackageService
     {
-        Task CalculatePackageDeliveryCostAsync(int basicCost, IEnumerable<Package> packages);
+        Task CalculatePackageDeliveryCostAsync(int basicCost, List<Package> packages);
 
-        Task CalculatePackageDeliveryTimeAsync(IEnumerable<Package> packages, int vehicleCount, int maxSpeed, int maxWeight);
+        Task CalculatePackageDeliveryTimeAsync(List<Package> packages, int vehicleCount, int maxSpeed, int maxWeight);
     }
 }

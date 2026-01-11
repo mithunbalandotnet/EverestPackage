@@ -15,7 +15,7 @@ namespace Kiki.Courier.ServiceLayer
             _couponDAL = couponDAL;
             _packageDAL = packageDAL;
         }
-        public async Task CalculatePackageDeliveryCostAsync(int basicCost, IEnumerable<Package> packages)
+        public async Task CalculatePackageDeliveryCostAsync(int basicCost, List<Package> packages)
         {
             int ratePerKg = await _packageDAL.GetRatePerKgAsync();
             int ratePerKm = await _packageDAL.GetRatePerKmAsync();
@@ -43,10 +43,85 @@ namespace Kiki.Courier.ServiceLayer
             }
         }
 
-        public async Task CalculatePackageDeliveryTimeAsync(IEnumerable<Package> packages, int vehicleCount, 
+        public async Task CalculatePackageDeliveryTimeAsync(List<Package> packages, int vehicleCount, 
             int maxSpeed, int maxWeight)
         {
-            
+            var packagesCopy = new List<Package>(packages); 
+            List<Vehicle> vehicles = GetPackagesForVehicle(packagesCopy, vehicleCount, maxWeight, maxSpeed);
+            packages.ForEach(p =>
+            {
+                var vehicle = vehicles.First(v => v.Trips.Any(t => t.Packages.Contains(p)));
+                var trip = vehicle.Trips.First(t => t.Packages.Contains(p));
+                p.EstimatedDeliveryTime = trip.StartTime + (decimal)1.0000 * p.DistanceInKm / maxSpeed;
+            });
+        }
+
+        private List<Vehicle> GetPackagesForVehicle(List<Package> packages, int vehicleCount, int maxWeight, int maxSpeed)
+        {
+            int vehicleId = 0;
+            List<Vehicle> vehicles = new List<Vehicle>();
+            List<(List<Package> packages, int TotalWeight) > sumPackages = new List<(List<Package>, int)>();
+            for (int i = 0; i < packages.Count; i++)
+            {
+                var shipment = (Packages : new List<Package>() { packages[i] }, TotalWeight : packages[i].WeightInKg);
+                sumPackages.Add(shipment);
+                shipment = (Packages: new List<Package>() { packages[i] }, TotalWeight: packages[i].WeightInKg);
+                for (int j = i + 1; j < packages.Count; j++)
+                {
+                    if(i != j && (shipment.TotalWeight + packages[j].WeightInKg) <= maxWeight)
+                    {
+                        shipment.TotalWeight += packages[j].WeightInKg;
+                        shipment.Packages.Add(packages[j]);
+                        sumPackages.Add(shipment);
+                        if(shipment.Packages.Count >= 3)
+                        {
+                            var newList = shipment.Packages.Skip(2).Append(packages[i]).ToList();
+                            sumPackages.Add((Packages: newList, TotalWeight: newList.Select(p => p.WeightInKg).Sum()));
+                        }
+                    }
+                }
+            }
+            // sumPackages contains all combinations of packages
+            sumPackages.Sort((a, b) => b.TotalWeight.CompareTo(a.TotalWeight));
+
+            do
+            {
+                var journey = sumPackages[0];
+                if (vehicleId < vehicleCount)
+                {
+                    vehicleId++;
+                    var vehicle = new Vehicle
+                    {
+                        Id = vehicleId,
+                        Trips = new List<Trip>() { new Trip {
+                        Packages = journey.packages,
+                        Distance = journey.packages.Select(p => p.DistanceInKm).Max(),
+                        StartTime = 0, EndTime = journey.packages.Select(p => p.DistanceInKm).Max() * (decimal)2.0000 / maxSpeed
+                    } }
+                    };
+                    vehicles.Add(vehicle);
+                }
+                else
+                {
+                    var vehicle = vehicles.OrderBy(v => v.Trips.Last().EndTime).First();
+                    var lastTripEndTime = vehicle.Trips.Last().EndTime;
+                    vehicle.Trips.Add(new Trip
+                    {
+                        Packages = journey.packages,
+                        Distance = journey.packages.Select(p => p.DistanceInKm).Max(),
+                        StartTime = lastTripEndTime,
+                        EndTime = lastTripEndTime + (journey.packages.Select(p => p.DistanceInKm).Max() * (decimal)2.0000 / maxSpeed)
+                    });
+                    vehicles.Add(vehicle);
+                }
+
+                journey.packages.ForEach(p =>
+                {
+                    sumPackages.RemoveAll(sp => sp.packages.Contains(p));
+                });
+            } while (sumPackages.Count > 0);
+
+            return vehicles;
         }
     }
 }
